@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import NavBar from '../components/NavBar';
 import { useRouter } from 'next/router';
-import '../components/sp-1.css';
+
 
 const SecretPage3 = () => {
     const [user, setUser] = useState(null);
@@ -233,7 +233,7 @@ const SecretPage3 = () => {
 
                 {errorMessage && <div>{errorMessage}</div>}
 
-                <div div className="header3 text">
+                <div className="header3 text">
                     <h2>Friends Manager</h2>
                     <p>Available Users</p>
                     {users.length === 0 ? (
@@ -294,8 +294,8 @@ const SecretPage3 = () => {
                 </div>
 
                 {friendRequests.length > 0 && (
-                    <div>
-                        <h2>Incoming Friend Requests</h2>
+                    <div className="header4 text">
+                        <h3>Incoming Friend Requests</h3>
                         <div>
                             <table>
                                 <thead>

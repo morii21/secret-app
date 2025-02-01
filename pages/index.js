@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import dynamic from 'next/dynamic';
-import '../components/sp-1.css';
 
 const Index = () => {
     const [email, setEmail] = useState('');

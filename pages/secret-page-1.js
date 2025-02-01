@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import NavBar from '../components/NavBar';
-import '../components/sp-1.css'; // If using global CSS
+
 
 
 const SecretPage1 = () => {
@@ -44,11 +44,11 @@ const SecretPage1 = () => {
       setSecretMessage(data?.message || '');
     }
   };
-
   const handleDeleteAccount = async (userId) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      setErrorMessage(''); // Clear any previous errors
 
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         throw new Error('No active session');
       }
@@ -68,18 +68,14 @@ const SecretPage1 = () => {
         throw new Error(data.error || "Failed to delete account");
       }
 
-      // Sign out after successful deletion
+      // If successful, sign out and redirect
       await supabase.auth.signOut();
-
-      // Redirect to home page
       window.location.href = '/';
     } catch (error) {
-      console.error("Error deleting account:", error.message);
-      // Optional: show error to user
-      alert(error.message);
+      console.error("Error deleting account:", error);
+      setErrorMessage(error.message);
     }
   };
-
   return (
 
     <div className="">
