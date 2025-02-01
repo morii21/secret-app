@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import NavBar from '../components/NavBar';
+import '../components/sp-1.css';
 
 const SecretPage2 = () => {
     const [user, setUser] = useState(null);
@@ -77,28 +78,34 @@ const SecretPage2 = () => {
     };
 
     return (
-        <div>
+        <div className="">
             <NavBar />
-            <h1>Secret Page 2</h1>
-            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-            {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-
-            {user ? (
-                <div>
-                    <p>Welcome, {user.email}</p>
-                    <p>Your Secret Message: {secretMessage || 'No secret message yet.'}</p>
-
-                    <textarea
-                        placeholder="Enter your secret message"
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                    />
-
-                    <button onClick={handleSaveMessage}>Save Message</button>
+            <div className="container ">
+                <div className="header ">
+                    <h1>Secret Page 2</h1>
                 </div>
-            ) : (
-                <p>Loading...</p>
-            )}
+
+
+                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+                {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+
+                {user ? (
+                    <div className="header">
+                        <p>Welcome, {user.email}</p>
+                        <p>Your Secret Message: {secretMessage || 'No secret message yet.'}</p>
+
+                        <textarea className="input"
+                            placeholder="Enter your secret message"
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                        />
+
+                        <button className="on-Click" onClick={handleSaveMessage}>Save Message</button>
+                    </div>
+                ) : (
+                    <p>Loading...</p>
+                )}
+            </div>
         </div>
     );
 };

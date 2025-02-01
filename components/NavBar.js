@@ -9,9 +9,12 @@ const NavBar = () => {
 
     return (
         <nav style={{ display: 'flex', gap: '10px', padding: '10px', background: '#333', color: '#fff' }}>
-            <Link href="/secret-page-1" style={{ color: 'white', textDecoration: 'none' }}>Secret Page 1 |</Link>
-            <Link href="/secret-page-2" style={{ color: 'white', textDecoration: 'none' }}>Secret Page 2 |</Link>
-            <Link href="/secret-page-3" style={{ color: 'white', textDecoration: 'none' }}>Secret Page 3 |</Link>
+            <ul>
+                <li><Link href="/secret-page-1" >Secret Page 1 </Link></li>
+                <li><Link href="/secret-page-2" >Secret Page 2 </Link></li>
+                <li><Link href="/secret-page-3" >Secret Page 3 </Link></li>
+
+            </ul>
             <button onClick={handleLogout} style={{ marginLeft: 'auto', background: 'red', color: 'white', padding: '5px' }}>Logout</button>
         </nav>
     );

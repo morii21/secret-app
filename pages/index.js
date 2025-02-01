@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import dynamic from 'next/dynamic';
+import '../components/sp-1.css';
 
 const Index = () => {
     const [email, setEmail] = useState('');
@@ -54,34 +55,41 @@ const Index = () => {
     }
 
     return (
-        <div>
-            <h1>Login or Register</h1>
-            <div>
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-            </div>
-            <div>
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-            </div>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            <div>
-                <button onClick={handleLogin} disabled={loading}>
-                    Login
-                </button>
-            </div>
-            <div>
-                <button onClick={handleRegister} disabled={loading}>
-                    Register
-                </button>
+
+        <div className="container ">
+            <div className="header  ">
+                <h1>Login or Register</h1>
+                <div className="header ">
+                    <input
+                        className="input2"
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </div>
+                <div>
+                    <input
+                        className="input2"
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </div>
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+                <div className="on-Click-container">
+                    <div>
+                        <button className="on-Click" onClick={handleLogin} disabled={loading}>
+                            Login
+                        </button>
+                    </div>
+                    <div>
+                        <button className="on-Click" onClick={handleRegister} disabled={loading}>
+                            Register
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     );

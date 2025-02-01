@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import NavBar from '../components/NavBar';
+import '../components/sp-1.css'; // If using global CSS
+
 
 const SecretPage1 = () => {
   const [user, setUser] = useState(null);
@@ -79,20 +81,33 @@ const SecretPage1 = () => {
   };
 
   return (
-    <div>
+
+    <div className="">
       <NavBar />
-      <h1>Secret Page 1</h1>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      {user ? (
-        <div>
-          <p>Welcome, {user.email}</p>
-          <p>Your Secret Message: {secretMessage || 'No secret message yet.'}</p>
-          <button onClick={() => handleDeleteAccount(user.id)}>Delete Account</button>
+      <div className="container ">
+        <div className="header ">
+          <h1>Secret Page 1</h1>
         </div>
-      ) : (
-        <p>Loading...</p>
-      )}
-    </div>
+
+
+
+        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        {
+          user ? (
+            <div className="header">
+              <p>Welcome, {user.email}</p>
+              <p>Your Secret Message: {secretMessage || 'No secret message yet.'}</p>
+              <div className="on-Click-container">
+                <button className="on-Click" onClick={() => handleDeleteAccount(user.id)}>Delete Account</button>
+                <button className="on-Click" onClick={() => handleLogout(user.id)}>Log out</button>
+              </div>
+            </div>
+          ) : (
+            <p>Loading...</p>
+          )
+        }
+      </div >
+    </div >
   );
 };
 

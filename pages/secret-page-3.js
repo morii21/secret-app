@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import NavBar from '../components/NavBar';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
+import '../components/sp-1.css';
 
 const SecretPage3 = () => {
     const [user, setUser] = useState(null);
@@ -133,7 +133,7 @@ const SecretPage3 = () => {
             const { error } = await supabase
                 .from('friend_requests')
                 .delete()
-                .or(`(from_user_id.eq.${user.id},to_user_id.eq.${userId}), (from_user_id.eq.${userId},to_user_id.eq.${user.id})`);
+                .or(`from_user_id.eq.${user.id},to_user_id.eq.${userId},from_user_id.eq.${userId},to_user_id.eq.${user.id}`);
 
             if (error) throw error;
 
@@ -144,7 +144,6 @@ const SecretPage3 = () => {
             setErrorMessage('Error unfriending user: ' + error.message);
         }
     };
-
 
     const sendFriendRequest = async (userId) => {
         try {
@@ -194,141 +193,147 @@ const SecretPage3 = () => {
         }, 8000);
     };
 
+    const acceptFriendRequest = async (requestId) => {
+        try {
+            const { error } = await supabase
+                .from('friend_requests')
+                .update({ status: 'accepted' })
+                .eq('id', requestId);
 
+            if (error) throw error;
+
+            await Promise.all([fetchFriendRequests(), fetchUsers()]);
+        } catch (error) {
+            setErrorMessage('Error accepting friend request: ' + error.message);
+        }
+    };
+
+    const rejectFriendRequest = async (requestId) => {
+        try {
+            const { error } = await supabase
+                .from('friend_requests')
+                .delete()
+                .eq('id', requestId);
+
+            if (error) throw error;
+
+            await Promise.all([fetchFriendRequests(), fetchUsers()]);
+        } catch (error) {
+            setErrorMessage('Error rejecting friend request: ' + error.message);
+        }
+    };
 
     if (loading) return <div>Loading...</div>;
 
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div>
             <NavBar />
-            <div className="max-w-6xl mx-auto px-4 py-8">
-                <h1 className="text-3xl font-bold mb-8">Friend Management</h1>
+            <div div className="container ">
 
-                {errorMessage && (
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                        {errorMessage}
-                    </div>
-                )}
 
-                <div className="space-y-8">
-                    <div className="bg-white rounded-lg shadow p-6">
-                        <h2 className="text-xl font-semibold mb-4">Available Users</h2>
-                        {users.length === 0 ? (
-                            <p className="text-gray-500">No available users found</p>
-                        ) : (
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Secret Message</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
-                                        {users.map((dbUser) => (
-                                            <tr key={dbUser.id}>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    {dbUser.email}
-                                                </td>
+                {errorMessage && <div>{errorMessage}</div>}
 
-                                                <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                    {dbUser.requestStatus === 'accepted' ? (
-                                                        <button
-                                                            onClick={() => unfriendUser(dbUser.id)}
-                                                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                                                        >
-                                                            Unfriend
-                                                        </button>
-                                                    ) : !dbUser.requestStatus ? (
-                                                        <button
-                                                            onClick={() => sendFriendRequest(dbUser.id)}
-                                                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                                                        >
-                                                            Send Friend Request
-                                                        </button>
-                                                    ) : (
-                                                        <span className="text-gray-500 italic">
-                                                            {dbUser.requestStatus === 'pending' ? 'Request Pending' : 'Already Friends'}
-                                                        </span>
-                                                    )}
-                                                </td>
+                <div div className="header3 text">
+                    <h2>Friends Manager</h2>
+                    <p>Available Users</p>
+                    {users.length === 0 ? (
+                        <p>No available users found</p>
+                    ) : (
+                        <div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Email</th>
+                                        <th>Actions</th>
+                                        <th>Secret Message</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {users.map((dbUser) => (
+                                        <tr key={dbUser.id}>
+                                            <td>{dbUser.email}</td>
 
-                                                <td className="inline-block align-middle">
-                                                    {!dbUser.secretMessageShown ? (
-                                                        <button
-                                                            onClick={async () => {
-                                                                await handlePopup(dbUser.id);
-                                                                setUsers(prevUsers =>
-                                                                    prevUsers.map(user =>
-                                                                        user.id === dbUser.id ? { ...user, secretMessageShown: true } : user
-                                                                    )
-                                                                );
-                                                            }}
-                                                            className="text-blue-500 hover:underline"
-                                                        >
-                                                            View Secret Message
-                                                        </button>
-                                                    ) : (
-                                                        <p className="text-gray-700">{secretMessage}</p>
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
-                    </div>
-
-                    {friendRequests.length > 0 && (
-                        <div className="bg-white rounded-lg shadow p-6">
-                            <h2 className="text-xl font-semibold mb-4">Incoming Friend Requests</h2>
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">From</th>
-                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
-                                        {friendRequests.map((request) => (
-                                            <tr key={request.id}>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    {request.from_user_email}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                    <button
-                                                        onClick={() => acceptFriendRequest(request.id)}
-                                                        className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
-                                                    >
-                                                        Accept
+                                            <td>
+                                                {dbUser.requestStatus === 'accepted' ? (
+                                                    <button onClick={() => unfriendUser(dbUser.id)}>
+                                                        Unfriend
                                                     </button>
-                                                    <button
-                                                        onClick={() => rejectFriendRequest(request.id)}
-                                                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                                                    >
-                                                        Reject
+                                                ) : !dbUser.requestStatus ? (
+                                                    <button onClick={() => sendFriendRequest(dbUser.id)}>
+                                                        Send Friend Request
                                                     </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                                ) : (
+                                                    <span>{dbUser.requestStatus === 'pending' ? 'Request Pending' : 'Already Friends'}</span>
+                                                )}
+                                            </td>
+
+                                            <td>
+                                                {!dbUser.secretMessageShown ? (
+                                                    <button
+                                                        onClick={async () => {
+                                                            await handlePopup(dbUser.id);
+                                                            setUsers(prevUsers =>
+                                                                prevUsers.map(user =>
+                                                                    user.id === dbUser.id ? { ...user, secretMessageShown: true } : user
+                                                                )
+                                                            );
+                                                        }}
+                                                    >
+                                                        View Secret Message
+                                                    </button>
+                                                ) : (
+                                                    <p>{secretMessage}</p>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     )}
                 </div>
+
+                {friendRequests.length > 0 && (
+                    <div>
+                        <h2>Incoming Friend Requests</h2>
+                        <div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>From</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {friendRequests.map((request) => (
+                                        <tr key={request.id}>
+                                            <td>{request.from_user_email}</td>
+                                            <td>
+                                                <button onClick={() => acceptFriendRequest(request.id)}>
+                                                    Accept
+                                                </button>
+                                                <button onClick={() => rejectFriendRequest(request.id)}>
+                                                    Reject
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Flash message */}
-            {flashMessage && (
-                <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-4 py-2 rounded shadow-md">
-                    {flashMessage}
-                </div>
-            )}
-        </div>
+            {
+                flashMessage && (
+                    <div>
+                        {flashMessage}
+                    </div>
+                )
+            }
+        </div >
     );
 };
 
